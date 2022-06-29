@@ -1,60 +1,57 @@
 import { v4 as uuidV4 } from 'uuid'; // universially unique identifier library
 
+const List = document.querySelector<HTMLUListElement>("#list")
+const form = document.querySelector<HTMLFormElement>("#new-task-form")
+const input = document.querySelector<HTMLInputElement>("#new-task-title")
+
+const tasks: Task[] = loadTasks()
+tasks.forEach(addListItem)
+
 type Task = {
-  // we created a Task type which is specific
   id: string;
-  title: string;
+  title : string;
   completed: boolean;
   createdAt: Date;
-};
+}
 
-const list = document.querySelector<HTMLUListElement>('#list'); // id of ul
-const form = document.getElementById('new-task-form') as HTMLFormElement | null; // id of form
-const input = document.querySelector<HTMLInputElement>('#new-task-title'); // id of input
-const tasks: Task[] = loadTasks() //loadtask
-//tasks.forEach(addListItem)
-
-form?.addEventListener('submit', (e) => {
-  //blocking prevent submitting
+form?.addEventListener("submit", e => {
   e.preventDefault();
-  if (input?.value == ' ' || input?.value == null) return;
-
-  const newTask: Task = {
-    id: uuidV4(),
+  if(input?.value == ""|| input?.value == null) return
+  
+  const  newTask:Task = {
+    id:uuidV4(),
     title: input.value,
-    completed: false, //turn to the true
-    createdAt: new Date(),
-  };
-  tasks.push(newTask);
-  saveTasks(); //function we will create later
+    completed: false,
+    createdAt : new Date() 
 
-  addListItem(newTask);
-  input.value = '';
-});
+  }
+  tasks.push(newTask)
+  addListItem(newTask)
+  input.value = "";
+
+
+})
 
 function addListItem(task: Task) {
-  const item = document.createElement('li'); // createing list element
-  const label = document.createElement('label');
-  const checkbox = document.createElement('input');
-  checkbox.addEventListener('change', () => {
-    //for changing checkbox
-    task.completed = checkbox.checked;
-    saveTasks(); //for saving tasks coming from local storage
-  });
-  checkbox.type = "checkbox"
-  checkbox.checked = task.completed   // if checked turn it to true if not stay or turn false 
-  label.append(checkbox,task.title) 
-  item.append(label)
-  list?.append(item)
+  const item = document.createElement("li")
+  const label = document.createElement("label")
+  const checkbox = document.createElement("input")
+  checkbox.addEventListener("change", () => {
+    task.completed = checkbox.checked
+    saveTasks()
+   } )
+   checkbox.type = "checkbox"
+   checkbox.checked = task.completed
+   label.append(checkbox, task.title)
+   item.append(label)
+   List?.append(item)
 }
-
-function saveTasks() {
+ function saveTasks(){
   localStorage.setItem("TASKS", JSON.stringify(tasks))
+ }
 
-}
-
-function loadTasks() : Task[] {
+ function loadTasks(): Task[] {
   const taskJSON = localStorage.getItem("TASKS")
-  if (taskJSON == null) return []
+  if (taskJSON ==null) return []
   return JSON.parse(taskJSON)
-}
+ }
